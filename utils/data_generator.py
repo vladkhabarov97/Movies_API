@@ -26,11 +26,6 @@ class DataGenerator:
         return location
 
     @staticmethod
-    def generate_random_genre_id():
-        genre_id = random.randint(1, 10)
-        return genre_id
-
-    @staticmethod
     def generate_random_rating():
         rating = random.randint(1, 5)
         return rating

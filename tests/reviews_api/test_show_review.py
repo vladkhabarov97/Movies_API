@@ -1,7 +1,7 @@
 from utils.data_generator import DataGenerator
 
 
-def test_hide_review(creating_movie, authenticated_super_admin):
+def test_show_review(creating_movie, authenticated_super_admin):
 
     movie_id = creating_movie["id"]
     data = {"rating": DataGenerator.generate_random_rating(), "text": DataGenerator.generate_random_description()}
@@ -10,9 +10,11 @@ def test_hide_review(creating_movie, authenticated_super_admin):
     authenticated_super_admin.reviews_api.hide_review(movie_id=movie_id, user_id=user_id)
     response = authenticated_super_admin.reviews_api.show_review(movie_id=movie_id, user_id=user_id)
 
-    assert response.status_code == 200
+    assert response.json()["userId"] == user_id
+    assert response.json()["text"] == data["text"]
 
-def test_hide_review_not_found(creating_movie, authenticated_super_admin):
+
+def test_show_review_not_found(creating_movie, authenticated_super_admin):
 
     movie_id = creating_movie["id"]
     data = {"rating": DataGenerator.generate_random_rating(), "text": DataGenerator.generate_random_description()}
@@ -21,6 +23,5 @@ def test_hide_review_not_found(creating_movie, authenticated_super_admin):
     authenticated_super_admin.reviews_api.delete_review(movie_id=movie_id)
     response = authenticated_super_admin.reviews_api.show_review(movie_id=movie_id, user_id=user_id, expected_status=404)
 
-    assert response.status_code == 404
     assert "message" in response.json()
     assert response.json()["error"] == "Not Found"

@@ -1,10 +1,7 @@
-from http.client import responses
-
 import pytest
 import  requests
-
+import random
 import config.credentials
-from clients.auth_api import AuthApi
 from clients.api_manager import ApiManager
 from data.movie_data import get_movie_payload
 from utils.data_generator import DataGenerator
@@ -55,7 +52,20 @@ def authenticated_user():
     session.close()
 
 @pytest.fixture(scope="function")
-def creating_movie(authenticated_super_admin):
-    payload = get_movie_payload()
+def creating_movie(authenticated_super_admin, existed_genre_id):
+    payload = get_movie_payload(existed_genre_id)
     response = authenticated_super_admin.movies_api.create_movie(payload)
-    return response.json()
+    movie = response.json()
+    yield movie
+
+    try:
+        authenticated_super_admin.movies_api.delete_movie(movie_id=movie["id"], expected_status=200)
+    except ValueError:
+        pass
+
+
+@pytest.fixture(scope="session")
+def existed_genre_id(api_manager):
+    genre_list = api_manager.genres_api.get_genres_list()
+    genre_id = random.choice(genre_list.json())["id"]
+    return genre_id

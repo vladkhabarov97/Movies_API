@@ -9,7 +9,10 @@ def test_hide_review(creating_movie, authenticated_super_admin):
     user_id = create_response.json()["userId"]
     response = authenticated_super_admin.reviews_api.hide_review(movie_id=movie_id, user_id=user_id)
 
-    assert response.status_code == 200
+    assert response.json()["userId"] == user_id
+    assert response.json()["text"] == data["text"]
+
+    #Тест не скрывает отзыв. При GET запросе отзыв видно, так же я смотрел на UI по movie_id, отзыв присутствует
 
 def test_hide_review_not_found(creating_movie, authenticated_super_admin):
 
@@ -20,6 +23,5 @@ def test_hide_review_not_found(creating_movie, authenticated_super_admin):
     authenticated_super_admin.reviews_api.delete_review(movie_id=movie_id)
     response = authenticated_super_admin.reviews_api.hide_review(movie_id=movie_id, user_id=user_id, expected_status=404)
 
-    assert response.status_code == 404
     assert "message" in response.json()
     assert response.json()["error"] == "Not Found"

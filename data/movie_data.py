@@ -1,6 +1,6 @@
 from utils.data_generator import DataGenerator
 
-def get_movie_payload():
+def get_movie_payload(genre_id: int):
     return {
         "name": DataGenerator.generate_random_name(),
         "imageUrl": "https://image.url",
@@ -8,5 +8,5 @@ def get_movie_payload():
         "description": DataGenerator.generate_random_description(),
         "location": DataGenerator.generate_random_location(),
         "published": True,
-        "genreId": DataGenerator.generate_random_genre_id()
+        "genreId": genre_id
     }
